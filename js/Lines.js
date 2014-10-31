@@ -4,6 +4,7 @@ function Lines()
 
 	this.init = function()
 	{
+		this.time = 0.0;
 		renderer.setClearColor( 0xbbbbbb, 1);
 
 		var geometry = new THREE.BufferGeometry();
@@ -13,10 +14,10 @@ function Lines()
 		var colors = [];
 		var indices_array = [];
 
-		var numPtsX = 32;
-		var numPtsY = 16;
+		var numPtsX = 96;
+		var numPtsY = 96;
 		var numVerts = numPtsX * numPtsY;
-		var deltaStep = 0.2;
+		var deltaStep = 0.15;
 
 		// generate verts
 		var posXOffset = -numPtsX * deltaStep * 0.5;
@@ -31,7 +32,8 @@ function Lines()
 				var posZ = 0.0;
 
 				positions.push(posX, posY,posZ);
-				colors.push(Math.random()*0.5+0.5, Math.random()*0.5+0.5, 1);
+				//colors.push(Math.random()*0.5+0.5, Math.random()*0.5+0.5, 1);
+				colors.push(0.5,0.5,0.5);
 			}
 		}
 
@@ -45,7 +47,6 @@ function Lines()
 				var indexCurr = rowIndexOffset + x;	
 				var indexRight = indexCurr + 1;	
 				var indexTop = indexCurr + numPtsX;	
-				//var indexTopRight = indexTop + 1;
 
 				indices_array.push(indexCurr, indexRight);	
 				indices_array.push(indexCurr, indexTop);	
@@ -74,7 +75,29 @@ function Lines()
 		geometry.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
 		geometry.computeBoundingSphere();
 
-		this.mesh = new THREE.Line( geometry, material, THREE.LinePieces );
+		var attributes = {
+			position: {	type: 'f', value: null },
+			color: { type: 'f', value: null },
+			//data: { type: 'f', value: null }
+		};
+
+		uniforms = {
+			time: {type: 'f', value: 2.0}
+		};
+
+		var shaderMaterial = new THREE.ShaderMaterial( {
+
+			uniforms: 		uniforms,
+			attributes:     attributes,
+			vertexShader:   document.getElementById( 'vertexShaderLines' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentShaderLines' ).textContent,
+
+			//blending: 		THREE.AdditiveBlending,
+			depthTest: 		true,
+			transparent:	false,
+		});
+
+		this.mesh = new THREE.Line( geometry, shaderMaterial, THREE.LinePieces );
 		scene.add( this.mesh );
 	};
 
@@ -82,5 +105,12 @@ function Lines()
 	{
 		scene.remove(this.mesh);
 		this.mesh = null;
+	};
+
+	this.update = function()
+	{
+		this.time += g_dt;
+		this.mesh.material.uniforms.time.value = this.time;
+		this.mesh.material.needsUpdate = true;
 	};
 }

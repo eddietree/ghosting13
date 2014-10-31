@@ -57,6 +57,58 @@
   </div>
 </div>
 
+<script id="vertexShaderLines" type="x-shader/x-vertex">
+
+      precision mediump float;
+      precision mediump int;
+
+      //attribute vec3 pos;
+      attribute vec4 color;
+      //attribute vec3 data;
+
+      varying vec3 vPosition;
+      varying vec4 vColor;
+
+      uniform float time;
+
+      void main() {
+          float PI = 3.14159;
+          //float deltaY = pow(data.z,2.0);
+
+          float distFromCenter = length(position);
+
+          vec3 posFinal = position;
+          posFinal.x += distFromCenter * 0.4 * sin( 0.8*position.y  + time );
+          posFinal.y += distFromCenter * 0.4 * cos( 0.8*position.x  + time );
+
+          vPosition = posFinal;
+          vColor = color;
+
+          gl_Position = projectionMatrix * modelViewMatrix * vec4( posFinal, 1.0 );
+      }
+
+  </script>
+
+  <script id="fragmentShaderLines" type="x-shader/x-fragment">
+
+      precision highp float;
+      precision mediump int;
+
+      varying vec3 vPosition;
+      varying vec4 vColor;
+
+      void main() {
+
+          //vec4 color = vec4( sin(time), 0.0, 0.0 ,1.0);
+          //color.b += cos(  time ) * 0.5;
+
+          //gl_FragColor = vec4(1.0,1.0,0.0,1.0);
+          gl_FragColor = vColor;
+
+      }
+
+  </script>
+
   <script src="js/ext/jquery-1.11.1.min.js"></script>
   <script src="js/ext/perlin.js"></script>
   <script src="js/ext/three.min.js"></script>
