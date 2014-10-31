@@ -13,14 +13,39 @@ var easeCubes = function(t)
 	return 0.5 * ( -Math.pow( 2.0, -10.0 * ( t-1.0 ) ) + 2.0 );
 }
 
+var easeCubes = function(t)
+{
+	var s = 1.70158;
+	t = t-1.0;
+	return (t*t*((s+1.0)*t+s)+1.0);
+}
+
+/*
+var easeCubes = function(t)
+{
+	if (t==0.0 || t==1.0) 
+	{
+		return t;
+	}
+
+	var amp = 1.0;
+	var period = 0.3;
+	
+	var pi2 = Math.PI*2.0;
+	var s = period/pi2*Math.sin(1.0/amp);
+	var result =  (amp*Math.pow(2.0,-10.0*t)*Math.sin((t-s)*pi2/period)+1.0);
+
+	return result;
+}*/
+
 function Terrain()
 {
 	BaseObj.call(this);
 
 	this.init = function()
 	{
-		var numCubesWidth = 19;
-		var cubeWidth = 0.05;
+		var numCubesWidth = 11;
+		var cubeWidth = 1.0;
 		var cubeMargin = 0.5;
 		var cubeRowWidth = numCubesWidth * (cubeWidth + cubeMargin );
 
@@ -30,11 +55,16 @@ function Terrain()
 
 		var count = 0;
 
-		var geometry = new THREE.BoxGeometry( cubeWidth, cubeWidth, cubeWidth );
-		//var geometry = new THREE.SphereGeometry( cubeWidth*0.5, 8, 6 );
-		var material = new THREE.MeshBasicMaterial( { color: 0xB8C671, wireframe: true, } );
+		//var geometry = new THREE.BoxGeometry( cubeWidth, cubeWidth, cubeWidth );
+		var geometry = new THREE.SphereGeometry( cubeWidth*0.5, 4, 4 );
+		var material = new THREE.MeshBasicMaterial( { color: 0xB8C671, wireframe: false, } );
+		var phongMaterial =  new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0xffffff, shininess: 30, shading: THREE.FlatShading } )
 
-		var phongMaterial =  new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.FlatShading } )
+		var light1 = new THREE.PointLight( 0xff0040, 2, 3 );
+		scene.add(light1);
+		light1.position.x = camera.position.x;
+		light1.position.y = camera.position.y;
+		light1.position.z = camera.position.z;
 
 		for ( var x = 0; x < numCubesWidth; ++x )
 		{
@@ -46,16 +76,17 @@ function Terrain()
 					var posY = -cubeRowWidth*0.5 + y * (cubeWidth + cubeMargin);
 					var posZ = -cubeRowWidth*0.5 + z * (cubeWidth + cubeMargin);
 
-					var cube = new THREE.Mesh( geometry, material );
+					var cube = new THREE.Mesh( geometry, phongMaterial );
 
 					cube.position.x = posX;
 					cube.position.y = posY;
 					cube.position.z = posZ;
+					cube.rotation.y = this.time*100000.0;
 
 					cube.index = {x:x, y:y, z:z};
 					cube.positionBase = {x:posX, y:posY, z:posZ};
 
-					scene.add( cube );
+					light1.add( cube );
 
 					this.cubes[count] = cube;
 					count++;
@@ -66,8 +97,8 @@ function Terrain()
 
 	this.update = function()
 	{
-		var cooldownTime = 0.2;
-		var lerpTime = 1.5;
+		var cooldownTime = 0.8;
+		var lerpTime = 1.7;
 
 		this.time += g_dt;
 
@@ -99,6 +130,10 @@ function Terrain()
 			var dirX = (index.x % 2)*2.0-1.0;
 			var dirY = (index.y % 2)*2.0-1.0;
 			var dirZ = (index.z % 2)*2.0-1.0;
+
+			cube.rotation.x = Math.PI * lerpFactor * coeffX;
+			cube.rotation.y = Math.PI * lerpFactor * coeffY;
+			cube.rotation.z = Math.PI * lerpFactor * coeffZ;
 
 			cube.position.x = posBase.x + dist*dirY * coeffX;
 			cube.position.y = posBase.y + dist*dirZ * coeffY;

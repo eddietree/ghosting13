@@ -21,6 +21,13 @@ camera.position.z = 5;
 
 scene.fog = new THREE.FogExp2( 0x6D3E86, 0.25 );
 
+/*var sphere = new THREE.SphereGeometry( 0.5, 16, 8 );
+light1 = new THREE.PointLight( 0xff0040, 2, 50 );
+light1.add( new THREE.Mesh( sphere, new THREE.MeshBasicMaterial( { color: 0xff0040 } ) ) );
+scene.add( light1 );*/
+
+
+
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
