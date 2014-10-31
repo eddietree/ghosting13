@@ -1,110 +1,86 @@
-
 function Lines()
 {
 	BaseObj.call(this);
 
 	this.init = function()
 	{
-		var numCubesWidth = 11;
-		var cubeWidth = 1.0;
-		var cubeMargin = 0.5;
-		var cubeRowWidth = numCubesWidth * (cubeWidth + cubeMargin );
+		renderer.setClearColor( 0xbbbbbb, 1);
 
-		this.time = 0.0;
-		this.cubes = new Array(numCubesWidth);
-		this.cubeDistance = cubeWidth+cubeMargin;
+		var geometry = new THREE.BufferGeometry();
+		var material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
 
-		var count = 0;
+		var positions = [];
+		var colors = [];
+		var indices_array = [];
 
-		var geometry = new THREE.BoxGeometry( cubeWidth, cubeWidth, cubeWidth );
-		//var geometry = new THREE.SphereGeometry( cubeWidth*0.5, 4, 4 );
-		var material = new THREE.MeshBasicMaterial( { color: 0xB8C671, wireframe: true, } );
-		var phongMaterial =  new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0xffffff, shininess: 30, shading: THREE.FlatShading } )
+		var numPtsX = 32;
+		var numPtsY = 16;
+		var numVerts = numPtsX * numPtsY;
+		var deltaStep = 0.2;
 
-		this.light = new THREE.PointLight( 0xff0040, 2, 3 );
-		scene.add(this.light);
-		this.light.position.x = camera.position.x;
-		this.light.position.y = camera.position.y;
-		this.light.position.z = camera.position.z;
+		// generate verts
+		var posXOffset = -numPtsX * deltaStep * 0.5;
+		var posYOffset = -numPtsY * deltaStep * 0.5;
 
-		for ( var x = 0; x < numCubesWidth; ++x )
+		for ( var y = 0; y < numPtsY; y++ )
 		{
-			for ( var y = 0; y < numCubesWidth; ++y )
+			for ( var x = 0; x < numPtsX; x++ )
 			{
-				for ( var z = 0; z < numCubesWidth; ++z )
-				{
-					var posX = -cubeRowWidth*0.5 + x * (cubeWidth + cubeMargin);
-					var posY = -cubeRowWidth*0.5 + y * (cubeWidth + cubeMargin);
-					var posZ = -cubeRowWidth*0.5 + z * (cubeWidth + cubeMargin);
+				var posX = posXOffset + x * deltaStep;
+				var posY = posYOffset + y * deltaStep;
+				var posZ = 0.0;
 
-					var cube = new THREE.Mesh( geometry, material );
-
-					cube.position.x = posX;
-					cube.position.y = posY;
-					cube.position.z = posZ;
-					cube.rotation.y = this.time*100000.0;
-
-					cube.index = {x:x, y:y, z:z};
-					cube.positionBase = {x:posX, y:posY, z:posZ};
-
-					this.light.add( cube );
-
-					this.cubes[count] = cube;
-					count++;
-				}
+				positions.push(posX, posY,posZ);
+				colors.push(Math.random()*0.5+0.5, Math.random()*0.5+0.5, 1);
 			}
 		}
+
+		// generate indices
+		for ( var y = 0; y < numPtsY-1; y++ )
+		{
+			var rowIndexOffset = y * numPtsX;
+
+			for ( var x = 0; x < numPtsX-1; x++ )
+			{
+				var indexCurr = rowIndexOffset + x;	
+				var indexRight = indexCurr + 1;	
+				var indexTop = indexCurr + numPtsX;	
+				//var indexTopRight = indexTop + 1;
+
+				indices_array.push(indexCurr, indexRight);	
+				indices_array.push(indexCurr, indexTop);	
+			}
+		}
+
+		// top row - needs to stitch together
+		for ( var x = 0; x < numPtsX-1; x++ )
+		{
+			var index0 = (numPtsY-1)*numPtsX + x;
+			var index1 = index0 + 1;
+			indices_array.push(index0, index1);
+		}
+
+		// right col - needs to stitch together
+		for ( var y = 0; y < numPtsY-1; y++ )
+		{
+			var index0 = y*numPtsX + numPtsX-1;
+			var index1 = index0 + numPtsX;
+			indices_array.push(index0, index1);
+		}
+
+		// vert attrib
+		geometry.addAttribute( 'index', new THREE.BufferAttribute( new Uint16Array( indices_array ), 1 ) );
+		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( positions ), 3 ) );
+		geometry.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
+		geometry.computeBoundingSphere();
+
+		this.mesh = new THREE.Line( geometry, material, THREE.LinePieces );
+		scene.add( this.mesh );
 	};
 
 	this.release = function()
 	{
-		scene.remove(this.light);
-		this.cubes = null;
-	};
-
-	this.update = function()
-	{
-		var cooldownTime = 0.0;
-		var lerpTime = 1.5;
-
-		this.time += g_dt;
-
-		var time = this.time % (cooldownTime+lerpTime);
-		var lerpFactor = clamp( (time-cooldownTime)/(lerpTime)  );
-
-		lerpFactor = easeCubes(lerpFactor);
-
-		var count = Math.floor(this.time / (cooldownTime+lerpTime) );
-		var coeffX = count % 3 == 0;
-		var coeffY = count % 3 == 1;
-		var coeffZ = count % 3 == 2;
-
-		this.updateCubes(lerpFactor, coeffX, coeffY, coeffZ);
-	};
-
-	this.updateCubes = function( lerpFactor, coeffX, coeffY, coeffZ )
-	{
-		var cubes = this.cubes;
-		var numCubes = this.cubes.length;
-
-		for (var i = 0; i < numCubes; i++ )
-		{
-			var cube = cubes[i];
-			var index = cube.index;
-			var posBase = cube.positionBase;
-			var dist = this.cubeDistance * lerpFactor;
-
-			var dirX = (index.x % 2)*2.0-1.0;
-			var dirY = (index.y % 2)*2.0-1.0;
-			var dirZ = (index.z % 2)*2.0-1.0;
-
-			cube.rotation.y = Math.PI * lerpFactor * coeffX;
-			cube.rotation.x = Math.PI * lerpFactor * coeffY;
-			cube.rotation.z = Math.PI * lerpFactor * coeffZ;
-
-			cube.position.x = posBase.x + dist*dirY * coeffX;
-			cube.position.y = posBase.y + dist*dirZ * coeffY;
-			cube.position.z = posBase.z + dist*dirX * coeffZ;
-		}
+		scene.remove(this.mesh);
+		this.mesh = null;
 	};
 }

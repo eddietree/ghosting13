@@ -109,10 +109,14 @@ function Terrain()
 				}
 			}
 		}
+
+		scene.fog = new THREE.FogExp2( 0x6D3E86, 0.25 );
+		renderer.setClearColor( 0x6D3E86, 1);
 	};
 
 	this.release = function()
 	{
+		scene.fog = null;
 		scene.remove(this.light);
 		this.cubes = null;
 	};
