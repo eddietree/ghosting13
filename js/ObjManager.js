@@ -4,7 +4,7 @@ function ObjManager()
 	{
 		this.objs = 
 		{
-			//terrain:new Terrain(),
+			terrain:new Terrain(),
 			//sun: new Sun(),
 			//shadow:new MascotShadow(),
 			//body:new MascotBody(),

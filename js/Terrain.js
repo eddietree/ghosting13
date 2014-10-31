@@ -4,7 +4,10 @@ function Terrain()
 
 	this.init = function()
 	{
-		
+		var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+		var cube = new THREE.Mesh( geometry, material );
+		scene.add( cube );
 	};
 
 	this.update = function()
@@ -13,15 +16,13 @@ function Terrain()
 
 	this.draw = function()
 	{
-/*		var screenWidth = g_canvas.width;
-		var screenHeight = g_canvas.height;
+		//var screenWidth = g_canvas.width;
+		//var screenHeight = g_canvas.height;
 
-		var numPts = this.numPts;
-		var deltaX = screenWidth / numPts;
-		var heightBase = screenHeight * 0.3;
-		var time = g_time * 0.5;
+		//g_ctx.fillStyle = "red";
+		//g_ctx.fillRect(0,0, screenWidth*0.5, screenHeight*0.5);
 
-		g_ctx.fillStyle = '#74CED9';
+		/*g_ctx.fillStyle = '#74CED9';
 		g_ctx.strokeStyle = 'white';
 		g_ctx.lineWidth = 7;
 		g_ctx.beginPath();
