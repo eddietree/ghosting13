@@ -18,15 +18,16 @@ var scene;
 var camera;
 var renderer;
 var g_objs;
+var g_profiles;
 var g_dt = 1.0 / 60.0;
 var g_time = 0.0;
 
 $(function() {
+
   	scene = new THREE.Scene();
 	scene.fog = new THREE.FogExp2( 0x6D3E86, 0.25 );
 	camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
 	camera.position.z = 5;
-
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -36,6 +37,10 @@ $(function() {
 	// objs
 	g_objs = new ObjManager();
 	g_objs.init();
+
+	g_profiles = new ProfileManager();
+	g_profiles.init();
+	g_profiles.loadProfile(0);
 
 	(function animloop(){
 	  requestAnimFrame(animloop);
@@ -52,4 +57,3 @@ function render()
 	g_objs.update();
 	g_objs.draw();
 }
-

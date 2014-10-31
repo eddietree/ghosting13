@@ -5,20 +5,42 @@ function ObjManager()
 		this.objs = 
 		{
 			terrain:new Terrain(),
-			//sun: new Sun(),
+			lines: new Lines(),
 			//shadow:new MascotShadow(),
 			//body:new MascotBody(),
 			//head:new MascotHead(),
 		};
 
-		for (var property in this.objs ) {
+		/*for (var property in this.objs ) {
 		    if (this.objs.hasOwnProperty(property)) {
 		        
 		        var obj = this.objs[property];
 		        obj.init();
 		    }
-		}
+		}*/
 	}
+
+	this.activateObj = function( a_objName )
+	{
+		var obj = this.objs[a_objName];
+		obj.active = true;
+		obj.init();
+	};
+
+	this.deactivateAllObjs = function()
+	{
+		for (var property in this.objs ) {
+		    if (this.objs.hasOwnProperty(property)) {
+		        
+		        var obj = this.objs[property];
+
+		        if (  'release' in obj ) {
+		        	obj.release();
+		        	obj.active = false;
+		        }
+		    }
+		}
+	};
 
 	this.update = function()
 	{
@@ -27,7 +49,7 @@ function ObjManager()
 		        
 		        var obj = this.objs[property];
 
-		        if (  'update' in obj ) {
+		        if (  'update' in obj && obj.active) {
 		        	obj.update();
 		        }
 		    }
@@ -41,7 +63,7 @@ function ObjManager()
 		        
 		        var obj = this.objs[property];
 
-		        if (  'draw' in obj && obj.visible ) {
+		        if (  'draw' in obj && obj.active ) {
 		        	obj.draw();
 		        }
 		    }

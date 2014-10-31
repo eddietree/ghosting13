@@ -1,8 +1,13 @@
 function BaseObj()
 {
-	this.visible = true;
+	this.active = false;
 
 	this.init = function()
+	{
+		
+	};
+
+	this.release = function()
 	{
 		
 	};
