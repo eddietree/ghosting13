@@ -20,6 +20,22 @@ var easeCubes = function(t)
 	return (t*t*((s+1.0)*t+s)+1.0);
 }
 
+var easeCubes = function(t)
+{
+	var s = 1.70158 * 1.525;
+	t = t*2.0;
+
+	if ( t < 1.0 )
+	{
+		return (0.5 * ( t * t * ( ( s + 1 ) * t - s ) ));
+	}
+
+	t -= 2.0;
+	return (0.5 * ( t * t * ( ( s + 1 ) * t + s ) + 2.0 ));
+
+	return (t*t*((s+1.0)*t+s)+1.0);
+};
+
 /*
 var easeCubes = function(t)
 {
@@ -60,11 +76,11 @@ function Terrain()
 		var material = new THREE.MeshBasicMaterial( { color: 0xB8C671, wireframe: false, } );
 		var phongMaterial =  new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0xffffff, shininess: 30, shading: THREE.FlatShading } )
 
-		var light1 = new THREE.PointLight( 0xff0040, 2, 3 );
-		scene.add(light1);
-		light1.position.x = camera.position.x;
-		light1.position.y = camera.position.y;
-		light1.position.z = camera.position.z;
+		this.light = new THREE.PointLight( 0xff0040, 2, 3 );
+		scene.add(this.light);
+		this.light.position.x = camera.position.x;
+		this.light.position.y = camera.position.y;
+		this.light.position.z = camera.position.z;
 
 		for ( var x = 0; x < numCubesWidth; ++x )
 		{
@@ -86,7 +102,7 @@ function Terrain()
 					cube.index = {x:x, y:y, z:z};
 					cube.positionBase = {x:posX, y:posY, z:posZ};
 
-					light1.add( cube );
+					this.light.add( cube );
 
 					this.cubes[count] = cube;
 					count++;
@@ -95,10 +111,16 @@ function Terrain()
 		}
 	};
 
+	this.release = function()
+	{
+		scene.remove(this.light);
+		this.cubes = null;
+	};
+
 	this.update = function()
 	{
-		var cooldownTime = 0.8;
-		var lerpTime = 1.7;
+		var cooldownTime = 0.0;
+		var lerpTime = 1.5;
 
 		this.time += g_dt;
 
@@ -131,8 +153,8 @@ function Terrain()
 			var dirY = (index.y % 2)*2.0-1.0;
 			var dirZ = (index.z % 2)*2.0-1.0;
 
-			cube.rotation.x = Math.PI * lerpFactor * coeffX;
-			cube.rotation.y = Math.PI * lerpFactor * coeffY;
+			cube.rotation.y = Math.PI * lerpFactor * coeffX;
+			cube.rotation.x = Math.PI * lerpFactor * coeffY;
 			cube.rotation.z = Math.PI * lerpFactor * coeffZ;
 
 			cube.position.x = posBase.x + dist*dirY * coeffX;
