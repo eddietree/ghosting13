@@ -16,8 +16,10 @@ function onWindowResize(){
 
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 5;
+
+scene.fog = new THREE.FogExp2( 0x6D3E86, 0.25 );
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -35,10 +37,7 @@ g_objs.init();
 
 function render()
 {
-	//g_ctx.fillStyle="#70A4B1";
-	//g_ctx.fillRect(0,0, g_canvas.width, g_canvas.height);
-
-	renderer.setClearColor( 0xff00ff, 1);
+	renderer.setClearColor( 0x6D3E86, 1);
 	renderer.render( scene, camera );
 
 	g_objs.update();

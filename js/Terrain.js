@@ -1,53 +1,108 @@
+var easeCubes = function(t)
+{
+	if ( t == 0.0 || t == 1.0 ) 
+	{
+		return t;
+	}
+	
+	t *= 2.0;
+	if ( t < 1 ) 
+	{
+		return 0.5 * Math.pow( 1024.0, t - 1 );
+	}
+	return 0.5 * ( -Math.pow( 2.0, -10.0 * ( t-1.0 ) ) + 2.0 );
+}
+
 function Terrain()
 {
 	BaseObj.call(this);
 
 	this.init = function()
 	{
-		var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-		var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-		var cube = new THREE.Mesh( geometry, material );
-		scene.add( cube );
+		var numCubesWidth = 19;
+		var cubeWidth = 0.05;
+		var cubeMargin = 0.5;
+		var cubeRowWidth = numCubesWidth * (cubeWidth + cubeMargin );
+
+		this.time = 0.0;
+		this.cubes = new Array(numCubesWidth);
+		this.cubeDistance = cubeWidth+cubeMargin;
+
+		var count = 0;
+
+		var geometry = new THREE.BoxGeometry( cubeWidth, cubeWidth, cubeWidth );
+		//var geometry = new THREE.SphereGeometry( cubeWidth*0.5, 8, 6 );
+		var material = new THREE.MeshBasicMaterial( { color: 0xB8C671, wireframe: true, } );
+
+		var phongMaterial =  new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xdddddd, specular: 0x009900, shininess: 30, shading: THREE.FlatShading } )
+
+		for ( var x = 0; x < numCubesWidth; ++x )
+		{
+			for ( var y = 0; y < numCubesWidth; ++y )
+			{
+				for ( var z = 0; z < numCubesWidth; ++z )
+				{
+					var posX = -cubeRowWidth*0.5 + x * (cubeWidth + cubeMargin);
+					var posY = -cubeRowWidth*0.5 + y * (cubeWidth + cubeMargin);
+					var posZ = -cubeRowWidth*0.5 + z * (cubeWidth + cubeMargin);
+
+					var cube = new THREE.Mesh( geometry, material );
+
+					cube.position.x = posX;
+					cube.position.y = posY;
+					cube.position.z = posZ;
+
+					cube.index = {x:x, y:y, z:z};
+					cube.positionBase = {x:posX, y:posY, z:posZ};
+
+					scene.add( cube );
+
+					this.cubes[count] = cube;
+					count++;
+				}
+			}
+		}
 	};
 
 	this.update = function()
 	{
+		var cooldownTime = 0.2;
+		var lerpTime = 1.5;
+
+		this.time += g_dt;
+
+		var time = this.time % (cooldownTime+lerpTime);
+		var lerpFactor = clamp( (time-cooldownTime)/(lerpTime)  );
+
+		lerpFactor = easeCubes(lerpFactor);
+
+		var count = Math.floor(this.time / (cooldownTime+lerpTime) );
+		var coeffX = count % 3 == 0;
+		var coeffY = count % 3 == 1;
+		var coeffZ = count % 3 == 2;
+
+		this.updateCubes(lerpFactor, coeffX, coeffY, coeffZ);
 	};
 
-	this.draw = function()
+	this.updateCubes = function( lerpFactor, coeffX, coeffY, coeffZ )
 	{
-		//var screenWidth = g_canvas.width;
-		//var screenHeight = g_canvas.height;
+		var cubes = this.cubes;
+		var numCubes = this.cubes.length;
 
-		//g_ctx.fillStyle = "red";
-		//g_ctx.fillRect(0,0, screenWidth*0.5, screenHeight*0.5);
-
-		/*g_ctx.fillStyle = '#74CED9';
-		g_ctx.strokeStyle = 'white';
-		g_ctx.lineWidth = 7;
-		g_ctx.beginPath();
-		g_ctx.moveTo( screenWidth, screenHeight );
-		g_ctx.lineTo( 0, screenHeight );
-
-		for ( var i = 0; i < numPts; i+=1 )
+		for (var i = 0; i < numCubes; i++ )
 		{
-			var pt = this.pts[i];
-			g_ctx.lineTo(pt.x, pt.y);
-		}
+			var cube = cubes[i];
+			var index = cube.index;
+			var posBase = cube.positionBase;
+			var dist = this.cubeDistance * lerpFactor;
 
-		g_ctx.closePath();
-		g_ctx.fill();
-		g_ctx.stroke();
+			var dirX = (index.x % 2)*2.0-1.0;
+			var dirY = (index.y % 2)*2.0-1.0;
+			var dirZ = (index.z % 2)*2.0-1.0;
 
-		// draw line
-		g_ctx.beginPath();
-		g_ctx.moveTo( this.pts[0].x, this.pts[0].y );
-		for ( var i = 0; i < numPts; i+=1 )
-		{
-			var pt = this.pts[i];
-			g_ctx.lineTo(pt.x, pt.y+17.0);
+			cube.position.x = posBase.x + dist*dirY * coeffX;
+			cube.position.y = posBase.y + dist*dirZ * coeffY;
+			cube.position.z = posBase.z + dist*dirX * coeffZ;
 		}
-		g_ctx.stroke();
-		g_ctx.lineWidth = 1;*/
 	};
 }
