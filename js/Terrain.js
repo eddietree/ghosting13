@@ -124,7 +124,7 @@ function Terrain()
 	this.update = function()
 	{
 		var cooldownTime = 0.0;
-		var lerpTime = 1.5;
+		var lerpTime = 3.0;
 
 		this.time += g_dt;
 

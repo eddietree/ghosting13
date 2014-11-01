@@ -5,8 +5,8 @@ function ProfileManager()
 		this.currProfileIndex = -1;
 		this.profiles = 
 		[
-			["terrain"],
 			["lines"],
+			["terrain"],
 			["spikes"],
 			["polybear"],
 			["terrain"],
