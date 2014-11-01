@@ -78,11 +78,14 @@
           float distFromCenter = length(position);
 
           vec3 posFinal = position;
-          posFinal.x += distFromCenter * 0.4 * sin( 0.8*position.y  + time );
-          posFinal.y += distFromCenter * 0.4 * cos( 0.8*position.x  + time );
+          float pulsateDist = sin(distFromCenter*(1.5+sin(time*0.2)*0.5) + time*0.5);
+          float offsetX = pulsateDist * 0.7 * sin( 0.8*position.y  + time );
+          float offsetY = pulsateDist * 0.7 * cos( 0.8*position.y  + time );
+          posFinal.x += offsetX;
+          posFinal.y += offsetY;
 
           vPosition = posFinal;
-          vColor = color;
+          vColor = color + vec4(offsetX)*0.25;
 
           gl_Position = projectionMatrix * modelViewMatrix * vec4( posFinal, 1.0 );
       }

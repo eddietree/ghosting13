@@ -17,7 +17,7 @@ function Lines()
 		var numPtsX = 96;
 		var numPtsY = 96;
 		var numVerts = numPtsX * numPtsY;
-		var deltaStep = 0.15;
+		var deltaStep = 0.2;
 
 		// generate verts
 		var posXOffset = -numPtsX * deltaStep * 0.5;
