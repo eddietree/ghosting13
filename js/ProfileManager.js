@@ -7,7 +7,7 @@ function ProfileManager()
 		[
 			["terrain"],
 			["lines"],
-			["terrain"],
+			["spikes"],
 			["terrain"],
 			["terrain"],
 		];
@@ -16,6 +16,11 @@ function ProfileManager()
 	this.loadProfile = function( a_index )
 	{
 		var numProfiles = this.profiles.length;
+
+		// ignore bad profiles
+		if ( a_index < 0 || a_index >= numProfiles) {
+			return;
+		}
 
 		// hide all other profile texts
 		for( var i = 0; i < numProfiles; i++ )
@@ -26,7 +31,9 @@ function ProfileManager()
 		}
 
 		// enable current profile1
-		$("#profile_" + a_index).css("display", "block");
+		var currProfile = "profile_" + a_index;
+		$("#"+currProfile).css("display", "block");
+		console.log("Loading profile: " + currProfile );
 
 		// deactivate all objects
 		g_objs.deactivateAllObjs();
@@ -61,17 +68,28 @@ function ProfileManager()
 	};
 }
 
+$("#tip").delay(4000).fadeOut();
+
 window.onkeyup = function( event ) {
 	var spaceKeyCode = 32;
 	var arrowRightKeyCode = 39;
 	var arrowLeftKeyCode = 37;
+	var keyCode = event.keyCode;
 
-	if ( event.keyCode == spaceKeyCode || event.keyCode == arrowRightKeyCode )
+	var numOffset = 49;
+	var numMax = numOffset + 9;
+
+	if ( keyCode == spaceKeyCode || keyCode == arrowRightKeyCode )
 	{
 		g_profiles.loadNextProfile();
 	}
-	else if ( event.keyCode == arrowLeftKeyCode )
+	else if ( keyCode == arrowLeftKeyCode )
 	{
 		g_profiles.loadPrevProfile();
+	}
+	else if ( keyCode >= numOffset && keyCode < numMax )
+	{
+		var index = keyCode - numOffset;
+		g_profiles.loadProfile( index );
 	}
 };

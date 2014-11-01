@@ -6,6 +6,7 @@ function ObjManager()
 		{
 			terrain:new Terrain(),
 			lines: new Lines(),
+			spikes: new Spikes(),
 			//shadow:new MascotShadow(),
 			//body:new MascotBody(),
 			//head:new MascotHead(),

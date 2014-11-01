@@ -23,7 +23,6 @@ var g_dt = 1.0 / 60.0;
 var g_time = 0.0;
 
 $(function() {
-
   	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
 	camera.position.z = 5;
@@ -40,7 +39,7 @@ $(function() {
 
 	g_profiles = new ProfileManager();
 	g_profiles.init();
-	g_profiles.loadProfile(1);
+	g_profiles.loadProfile(2);
 
 	(function animloop(){
 	  requestAnimFrame(animloop);
@@ -51,7 +50,6 @@ $(function() {
 
 function render()
 {
-	
 	renderer.render( scene, camera );
 
 	g_objs.update();
