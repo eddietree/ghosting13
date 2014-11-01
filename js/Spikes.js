@@ -14,10 +14,10 @@ function Spikes()
 		var colors = [];
 		var indices_array = [];
 
-		var numPtsX = 96;
-		var numPtsY = 96;
+		var numPtsX = 48;
+		var numPtsY = 48;
 		var numVerts = numPtsX * numPtsY;
-		var deltaStep = 0.2;
+		var deltaStep = 0.25;
 
 		// generate verts
 		var posXOffset = -numPtsX * deltaStep * 0.5;
@@ -32,7 +32,7 @@ function Spikes()
 				var posZ = 0.0;
 
 				positions.push(posX, posY,posZ);
-				colors.push(Math.random()*0.5+0.5, Math.random()*0.5+0.5, 1);
+				colors.push(Math.random(), Math.random(), 1, 0.2);
 				//colors.push(0.5,0.5,0.5);
 			}
 		}
@@ -47,9 +47,10 @@ function Spikes()
 				var indexCurr = rowIndexOffset + x;	
 				var indexRight = indexCurr + 1;	
 				var indexTop = indexCurr + numPtsX;	
+				var indexTopRight = indexTop + 1;	
 
-				indices_array.push(indexCurr, indexRight);	
-				indices_array.push(indexCurr, indexTop);	
+				indices_array.push(indexCurr, indexRight, indexTopRight);	
+				indices_array.push(indexCurr, indexTopRight, indexTop);	
 			}
 		}
 
@@ -72,7 +73,7 @@ function Spikes()
 		// vert attrib
 		geometry.addAttribute( 'index', new THREE.BufferAttribute( new Uint16Array( indices_array ), 1 ) );
 		geometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( positions ), 3 ) );
-		geometry.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( colors ), 3 ) );
+		geometry.addAttribute( 'color', new THREE.BufferAttribute( new Float32Array( colors ), 4 ) );
 		geometry.computeBoundingSphere();
 
 		var attributes = {
@@ -89,15 +90,16 @@ function Spikes()
 
 			uniforms: 		uniforms,
 			attributes:     attributes,
-			vertexShader:   document.getElementById( 'vertexShaderLines' ).textContent,
+			vertexShader:   document.getElementById( 'vertexShaderSpikes' ).textContent,
 			fragmentShader: document.getElementById( 'fragmentShaderLines' ).textContent,
 
 			//blending: 		THREE.AdditiveBlending,
 			depthTest: 		true,
-			transparent:	false,
+			transparent:	true,
 		});
 
-		this.mesh = new THREE.Line( geometry, shaderMaterial, THREE.LinePieces );
+		//this.mesh = new THREE.Line( geometry, shaderMaterial, THREE.LinePieces );
+		this.mesh = new THREE.Mesh( geometry, shaderMaterial );
 		scene.add( this.mesh );
 	};
 
