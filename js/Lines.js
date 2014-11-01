@@ -47,9 +47,11 @@ function Lines()
 				var indexCurr = rowIndexOffset + x;	
 				var indexRight = indexCurr + 1;	
 				var indexTop = indexCurr + numPtsX;	
+				var indexTopRight = indexTop + 1;	
 
 				indices_array.push(indexCurr, indexRight);	
 				indices_array.push(indexCurr, indexTop);	
+				indices_array.push(indexCurr, indexTopRight);	
 			}
 		}
 
