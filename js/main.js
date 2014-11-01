@@ -39,7 +39,7 @@ $(function() {
 
 	g_profiles = new ProfileManager();
 	g_profiles.init();
-	g_profiles.loadProfile(3);
+	g_profiles.loadProfile(1);
 
 	(function animloop(){
 	  requestAnimFrame(animloop);

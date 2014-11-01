@@ -14,10 +14,10 @@ function Polybear()
 		var colors = [];
 		var indices_array = [];
 
-		var numPtsX = 48;
-		var numPtsY = 48;
+		var numPtsX = 96;
+		var numPtsY = 96;
 		var numVerts = numPtsX * numPtsY;
-		var deltaStep = 0.25;
+		var deltaStep = 0.15;
 
 		// generate verts
 		var posXOffset = -numPtsX * deltaStep * 0.5;
@@ -49,8 +49,8 @@ function Polybear()
 				var indexTop = indexCurr + numPtsX;	
 				var indexTopRight = indexTop + 1;	
 
-				indices_array.push(indexCurr, indexRight, indexTopRight);	
-				indices_array.push(indexCurr, indexTopRight, indexTop);	
+				indices_array.push(indexCurr, indexTopRight);	
+				//indices_array.push(indexCurr, indexTop);	
 			}
 		}
 
