@@ -8,7 +8,7 @@ function ProfileManager()
 			["terrain"],
 			["lines"],
 			["spikes"],
-			["terrain"],
+			["polybear"],
 			["terrain"],
 		];
 	};

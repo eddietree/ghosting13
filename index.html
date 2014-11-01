@@ -89,7 +89,7 @@
           posFinal.y += offsetY;
 
           vPosition = posFinal;
-          vColor = color + vec4(offsetX)*0.5;
+          vColor = color + vec4(offsetX)*0.25;
 
           gl_Position = projectionMatrix * modelViewMatrix * vec4( posFinal, 1.0 );
       }
@@ -97,6 +97,39 @@
   </script>
 
   <script id="vertexShaderSpikes" type="x-shader/x-vertex">
+
+      precision mediump float;
+      precision mediump int;
+
+      //attribute vec3 pos;
+      attribute vec4 color;
+      //attribute vec3 data;
+
+      varying vec3 vPosition;
+      varying vec4 vColor;
+
+      uniform float time;
+
+      void main() {
+          float distFromCenter = length(position);
+
+          vec3 posFinal = position;
+          float pulsateDist = sin(distFromCenter*(10.5+sin(time*0.2)*0.5) + time*0.5);
+          float offsetX = pulsateDist * 1.7 * sin( 0.8*position.x  + time );
+          float offsetY = pulsateDist * 1.7 * cos( 0.8*position.y  + time );
+          posFinal.x += offsetX;
+          posFinal.y += offsetY;
+          posFinal.z -= offsetY;
+
+          vPosition = posFinal;
+          vColor = color + vec4(offsetY)*0.95;
+
+          gl_Position = projectionMatrix * modelViewMatrix * vec4( posFinal, 1.0 );
+      }
+
+  </script>
+
+   <script id="vertexShaderPolybear" type="x-shader/x-vertex">
 
       precision mediump float;
       precision mediump int;
@@ -157,6 +190,7 @@
   <script src="js/Terrain.js"></script>
   <script src="js/Lines.js"></script>
   <script src="js/Spikes.js"></script>
+  <script src="js/Polybear.js"></script>
   <script src="js/ObjManager.js"></script>
   <script src="js/ProfileManager.js"></script>
   <script src="js/main.js"></script>

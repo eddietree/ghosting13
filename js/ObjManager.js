@@ -7,7 +7,7 @@ function ObjManager()
 			terrain:new Terrain(),
 			lines: new Lines(),
 			spikes: new Spikes(),
-			//shadow:new MascotShadow(),
+			polybear:new Polybear(),
 			//body:new MascotBody(),
 			//head:new MascotHead(),
 		};
