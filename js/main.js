@@ -1,28 +1,35 @@
-function onWindowResize(){
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
 var scene;
 var camera;
 var renderer;
+var canvas;
 var g_objs;
 var g_profiles;
 var g_dt = 1.0 / 60.0;
 var g_time = 0.0;
 
+function resize() {
+	var width = canvas.clientWidth;
+	var height = canvas.clientHeight;
+	if ( canvas.width != width || canvas.height != height )
+	{
+		renderer.setSize( canvas.clientWidth, canvas.clientHeight, false);
+		camera.aspect = canvas.clientWidth / canvas.clientHeight;
+		camera.updateProjectionMatrix();
+	}
+}
+
+
 $(function() {
 
-  	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	renderer = new THREE.WebGLRenderer();
+	canvas = renderer.domElement;
+	document.body.appendChild( canvas );
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera( 50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000 );
 	camera.position.z = 5;
 
-	renderer = new THREE.WebGLRenderer();
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	resize();
 	renderer.setClearColor( 0xffffff, 1);
-	document.body.appendChild( renderer.domElement );
-	window.addEventListener( 'resize', onWindowResize, false );
 
 	// objs
 	g_objs = new ObjManager();
@@ -53,6 +60,7 @@ $(function() {
 
 function render()
 {
+	resize();
 	renderer.render( scene, camera );
 
 	g_objs.update();
