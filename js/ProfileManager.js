@@ -93,3 +93,9 @@ window.onkeyup = function( event ) {
 		g_profiles.loadProfile( index );
 	}
 };
+
+window.addEventListener('touchstart', function() {
+	g_profiles.loadNextProfile();
+}, false);
+
+
